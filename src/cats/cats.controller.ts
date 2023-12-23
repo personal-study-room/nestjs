@@ -1,20 +1,11 @@
-import {
-  Controller,
-  Delete,
-  Get,
-  HttpException,
-  Param,
-  ParseIntPipe,
-  Patch,
-  Put,
-  UseFilters,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, UseFilters, UseInterceptors } from '@nestjs/common';
 import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
-import { PositiveIntPipe } from 'src/common/pipes/positiveInt.pipe';
 
 import { CatsService } from './cats.service';
+import { CatRequestDto } from './dto/cats.request.dto';
+import { ApiOperation, ApiResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ReadOnlyData } from './dto/cats.dto';
 
 @Controller('cats')
 @UseInterceptors(SuccessInterceptor)
@@ -22,50 +13,43 @@ import { CatsService } from './cats.service';
 @UseFilters(HttpExceptionFilter)
 export class CatsController {
   constructor(private readonly catsService: CatsService) {}
-
+  @ApiOperation({ summary: '특정 고양이 가져오기 api' })
   @Get()
-  // @UseFilters(HttpExceptionFilter) // 커스텀 필터를 적용한 예시.
-  getAllCats() {
-    /** 
-    // express 에서 new Error() 와 같다.
-    throw new HttpException('api is broken', 401);
-
-    // custom
-    throw new HttpException(
-      // json 형태 정의
-      { status: HttpStatus.FORBIDDEN, //////: 'this is a custom message' },
-      // status code 전달
-      HttpStatus.FORBIDDEN,
-    );
-    */
-    // throw new HttpException('api broken', 401);
-
-    return { cats: 'all cats' };
+  getCurrentCat() {
+    return '';
   }
 
-  //  /cats/:id
-  @Get(':id')
-  // pipe는 각각의 단계를 task라고 하며, 내가 나열한 pipe를 토대로 순서대로 실행한다.
-  getOneCat(@Param('id', ParseIntPipe, PositiveIntPipe) param: number) {
-    console.log('controller');
-    console.log('param : ', param);
-    console.log(typeof param);
-
-    return 'one cat';
+  @ApiResponse({
+    status: 201,
+    description: '회원가입 성공',
+    type: ReadOnlyData,
+  })
+  @ApiUnauthorizedResponse({
+    description: '이미 존재하는 회원',
+  })
+  @ApiOperation({ summary: '회원가입 api' })
+  @Post()
+  @UseFilters(HttpExceptionFilter)
+  async signup(@Body() body: CatRequestDto) {
+    console.log(body);
+    return await this.catsService.signUp(body);
   }
 
-  @Put(':id')
-  updateCat() {
-    return 'update cat';
+  @ApiOperation({ summary: '로그인 api' })
+  @Post('login')
+  logIn() {
+    return '';
   }
 
-  @Patch(':id')
-  updatePartialCat() {
-    return 'partially update cat';
+  @ApiOperation({ summary: '로그아웃 api' })
+  @Post('logout')
+  logOut() {
+    return '';
   }
 
-  @Delete(':id')
-  deleteCat() {
-    return 'delete cat';
+  @ApiOperation({ summary: '파일 업로드 api' })
+  @Post('upload/cats')
+  uploadCatImg() {
+    return '';
   }
 }

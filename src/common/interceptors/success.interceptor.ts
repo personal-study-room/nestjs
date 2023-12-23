@@ -6,7 +6,7 @@ export class SuccessInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler<any>): Observable<any> | Promise<Observable<any>> {
     console.log('Before ...');
 
-    const now = Date.now();
+    // const now = Date.now();
 
     // 성공과 실패에 대해서 분기 처리하는 곳.
     return next.handle().pipe(
