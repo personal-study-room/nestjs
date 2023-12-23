@@ -1,6 +1,7 @@
-import { Controller, Delete, Get, HttpException, Param, Patch, Put } from '@nestjs/common';
+import { Controller, Delete, Get, HttpException, Param, ParseIntPipe, Patch, Put } from '@nestjs/common';
 
 import { CatsService } from './cats.service';
+import { PositiveIntPipe } from 'src/common/pipes/positiveInt.pipe';
 
 @Controller('cats')
 // @UseFilters()는 클래스 레벨에서 사용 가능하다.
@@ -17,7 +18,7 @@ export class CatsController {
     // custom
     throw new HttpException(
       // json 형태 정의
-      { status: HttpStatus.FORBIDDEN, message: 'this is a custom message' },
+      { status: HttpStatus.FORBIDDEN, //////: 'this is a custom message' },
       // status code 전달
       HttpStatus.FORBIDDEN,
     );
@@ -28,8 +29,11 @@ export class CatsController {
 
   //  /cats/:id
   @Get(':id')
-  getOneCat(@Param() param) {
+  // pipe는 각각의 단계를 task라고 하며, 내가 나열한 pipe를 토대로 순서대로 실행한다.
+  getOneCat(@Param('id', ParseIntPipe, PositiveIntPipe) param: number) {
+    console.log('controller');
     console.log('param : ', param);
+    console.log(typeof param);
 
     return 'one cat';
   }

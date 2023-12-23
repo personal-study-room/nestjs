@@ -10,8 +10,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus();
     const message = exception.getResponse();
 
-    console.log('message', message);
-
     if (typeof message === 'string') {
       response //
         .status(status) //
@@ -22,8 +20,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
           path: request.url,
         });
     } else {
-      console.log('...message', { ...message });
-
       response.status(status).json({
         success: false,
         timestamp: new Date().toISOString(),
