@@ -1,7 +1,7 @@
 // 무조건 양의 정수로 parsing해주는 pipe 만들기
-
 import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 
+// Injectable()을 사용했음에도, 별도로 모듈에 등록하지 않는 이유는, 결과적으로 사용되는 곳에서 인스턴스화 되기 때문임
 @Injectable()
 export class PositiveIntPipe implements PipeTransform {
   transform(value: number, metadata: ArgumentMetadata) {

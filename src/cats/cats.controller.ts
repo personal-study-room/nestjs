@@ -1,10 +1,25 @@
-import { Controller, Delete, Get, HttpException, Param, ParseIntPipe, Patch, Put } from '@nestjs/common';
-
-import { CatsService } from './cats.service';
+import {
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Put,
+  UseFilters,
+  UseInterceptors,
+} from '@nestjs/common';
+import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter';
+import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
 import { PositiveIntPipe } from 'src/common/pipes/positiveInt.pipe';
 
+import { CatsService } from './cats.service';
+
 @Controller('cats')
+@UseInterceptors(SuccessInterceptor)
 // @UseFilters()는 클래스 레벨에서 사용 가능하다.
+@UseFilters(HttpExceptionFilter)
 export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 
@@ -23,8 +38,9 @@ export class CatsController {
       HttpStatus.FORBIDDEN,
     );
     */
-    throw new HttpException('api broken', 401);
-    return 'all cats';
+    // throw new HttpException('api broken', 401);
+
+    return { cats: 'all cats' };
   }
 
   //  /cats/:id
