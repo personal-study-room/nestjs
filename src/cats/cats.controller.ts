@@ -58,6 +58,7 @@ export class CatsController {
     return '';
   }
 
+  // multipart-form data 요청이 들어온다
   @ApiOperation({ summary: '파일 업로드 api' })
   @Post('upload/cats')
   uploadCatImg() {

@@ -6,12 +6,13 @@ import { CatsRepository } from 'src/cats/cats.repository';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
+  // 여기는 jwt를 decoding 한 후 저장하는 전략
   constructor(private readonly catsRepository: CatsRepository) {
     console.log('jwt Strategy 실행');
 
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: 'secret',
+      secretOrKey: process.env.JWT_SECRET,
       ignoreExpiration: false,
     });
   }
