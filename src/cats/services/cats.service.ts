@@ -1,8 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
-import { CatsRepository } from './cats.repository';
-import { CatRequestDto } from './dto/cats.request.dto';
+import { CatsRepository } from '../repositories/cats.repository';
+import { CatRequestDto } from '../models/dto/cats.request.dto';
+import { Cat } from '../models/cats.schema';
+import { ReadOnlyData } from '../models/dto/cats.dto';
 
 @Injectable()
 export class CatsService {
@@ -21,6 +23,21 @@ export class CatsService {
     const cat = await this.catsRepository.create(email, name, hashedPassword);
 
     return cat.readOnlyData;
+  }
+
+  async uploadImg(cat: Cat, files: Express.Multer.File[]) {
+    const fileName = `cats/${files[0].filename}`;
+
+    console.log(fileName);
+    const newCat = await this.catsRepository.findByIdAndUpdateImg(cat.id, fileName);
+
+    console.log(newCat);
+    return newCat;
+  }
+
+  async getAllCats(): Promise<ReadOnlyData[]> {
+    const cats: Cat[] = await this.catsRepository.getAllCats();
+    return cats.map(cat => cat.readOnlyData);
   }
 
   hiCatService() {

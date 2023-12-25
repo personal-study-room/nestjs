@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseFilters, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Post, UploadedFiles, UseFilters, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { AuthService } from 'src/auth/auth.service';
 import { LoginRequestDto } from 'src/auth/dto/login.request.dto';
@@ -7,10 +7,12 @@ import { CurrentUser } from 'src/common/decorators/user.decorator';
 import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
 
-import { CatsService } from './cats.service';
-import { ReadOnlyData } from './dto/cats.dto';
-import { CatRequestDto } from './dto/cats.request.dto';
-import { Cat } from './cats.schema';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { multerOptions } from 'src/common/utils/multer.options';
+import { Cat } from '../models/cats.schema';
+import { ReadOnlyData } from '../models/dto/cats.dto';
+import { CatRequestDto } from '../models/dto/cats.request.dto';
+import { CatsService } from '../services/cats.service';
 
 @Controller('cats')
 @UseInterceptors(SuccessInterceptor)
@@ -60,8 +62,17 @@ export class CatsController {
 
   // multipart-form data 요청이 들어온다
   @ApiOperation({ summary: '파일 업로드 api' })
-  @Post('upload/cats')
-  uploadCatImg() {
-    return '';
+  @UseInterceptors(FilesInterceptor('file', 10, multerOptions('cats'))) // form 태그 이름.
+  @UseGuards(JwtAuthGuard)
+  @Post('upload')
+  async uploadCatImg(@UploadedFiles() files: Array<Express.Multer.File>, @CurrentUser() cat: Cat) {
+    console.log(files);
+    // return { image: `http://localhost:3000/media/cats/${files[0].filename}` };
+    return await this.catsService.uploadImg(cat, files);
+  }
+
+  @Get('all')
+  async getAllCats() {
+    return await this.catsService.getAllCats();
   }
 }

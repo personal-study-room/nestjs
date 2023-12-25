@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { Cat } from './cats.schema';
+import { Cat } from '../models/cats.schema';
 
 @Injectable()
 export class CatsRepository {
@@ -28,5 +28,18 @@ export class CatsRepository {
   async findCatByIdWithoutPassword(id: string): Promise<Cat | null> {
     const cat = this.catModel.findById(id).select('-password'); // 'email name' 이라고 쓰면, 저 두개의 필드만 가지고 온다.
     return cat;
+  }
+
+  async findByIdAndUpdateImg(id: string, fileName: string) {
+    await this.catModel.findByIdAndUpdate(
+      { _id: id },
+      {
+        imgUrl: fileName,
+      },
+    );
+  }
+
+  async getAllCats(): Promise<Cat[]> {
+    return await this.catModel.find({});
   }
 }
