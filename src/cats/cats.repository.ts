@@ -1,8 +1,8 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Cat } from './cats.schema';
 import { Model } from 'mongoose';
-import { CatRequestDto } from './dto/cats.request.dto';
+
+import { Cat } from './cats.schema';
 
 @Injectable()
 export class CatsRepository {
@@ -10,7 +10,7 @@ export class CatsRepository {
 
   async existsByEmail(email: string): Promise<boolean> {
     const result = await this.catModel.exists({ email });
-    return result === null;
+    return result !== null;
   }
 
   async create(email: string, name: string, password: string): Promise<Cat> {
@@ -19,5 +19,14 @@ export class CatsRepository {
       name,
       password,
     });
+  }
+
+  async findCatByEmail(email: string): Promise<Cat | null> {
+    return await this.catModel.findOne({ email });
+  }
+
+  async findCatByIdWithoutPassword(id: string): Promise<Cat | null> {
+    const cat = this.catModel.findById(id).select('-password'); // 'email name' 이라고 쓰면, 저 두개의 필드만 가지고 온다.
+    return cat;
   }
 }
